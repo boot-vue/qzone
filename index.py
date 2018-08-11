@@ -1,6 +1,7 @@
 import requests
 import os, threading
 import json
+import mysql.connector
 
 
 # 每次要更新cookie,  相册url后部分,  照片url后部分(注意拼接相册id与设置分页大小)
@@ -52,17 +53,19 @@ def parsePhotos(albums, cookie):
             photo_data = json.loads(photo_list.split('(')[1].split(')')[0])
             photos = photo_data['data']['photoList']
             # with open('./' + name + '.txt', 'a+') as f:
-            #     for it_photo in photos:
-            #         if it_photo['raw']:
-            #             urls.append(it_photo['raw'])
-            #         else:
-            #             urls.append(it_photo['origin_url'])
+            for it_photo in photos:
+                if it_photo['raw']:
+                    urls.append(it_photo['raw'])
+                else:
+                    urls.append(it_photo['origin_url'])
             #         f.write(it_photo['raw'] or it_photo['origin_url'] + '\n')
             #     f.close()
-        # 开启线程下载(多线程有点问题,图片太多中途http请求好像会中断)
-        # thread = threading.Thread(target=download, args=(name, urls))
-        # thread.start()
-        # download(name, urls)
+            # 开启线程下载(多线程有点问题,图片太多中途http请求好像会中断)
+            # thread = threading.Thread(target=download, args=(name, urls))
+            # thread.start()
+            # download(name, urls)
+            # 写入数据库
+            savePhotos(name, urls)
 
 
 # 下载 urls[ ] 图片链接,  name:文件夹名
@@ -80,6 +83,20 @@ def download(name, urls):
             f.write(photo)
         index = index + 1
     print(name + ' 下的照片下载完毕')
+
+
+# 写入数据库
+def savePhotos(name, urls):
+    conn = mysql.connector.connect(host='192.168.0.81', user='root', password='root', database='qzone')
+    cursor = conn.cursor()
+    index = 0
+    while index < len(urls):
+        cursor.execute("insert into photos values(null ,%s,%s)", [name, urls[index]])
+        index = index + 1
+        print("插入数据库")
+    conn.commit()
+    cursor.close()
+    conn.close()
 
 
 if __name__ == '__main__':
