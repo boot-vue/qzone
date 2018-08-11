@@ -46,23 +46,23 @@ def parsePhotos(albums, cookie):
                 continue
             photo_list = requests.get(
                 'https://h5.qzone.qq.com/proxy/domain/photo.qzone.qq.com/fcgi-bin/cgi_list_photo?' +
-                'g_tk=970489861&callback=shine0_Callback&t=472636949&mode=0&idcNum=4&hostUin=497921268&' +
-                'topicId=' + id + '&noTopic=0&uin=497921268&pageStart=0&pageNum=1000&skipCmtCount=0&singleurl=1&batchId=&notice=0&appid=4&inCharset=utf-8' +
-                '&outCharset=utf-8&source=qzone&plat=qzone&outstyle=json&format=jsonp&json_esc=1&question=&answer=&callbackFun=shine0&_=1533966634780',
+                'g_tk=905918741&callback=shine2_Callback&t=982127757&mode=0&idcNum=4&hostUin=497921268&topicId=' + id + '&noTopic=0&uin=497921268' +
+                '&pageStart=30&pageNum=1000&skipCmtCount=0&singleurl=1&batchId=&notice=0&appid=4&inCharset=utf-8&outCharset=utf-8&source=qzone&plat=qzone&outstyle=json&format=jsonp&json_esc=1&callbackFun=shine2&_=1533979670886',
                 headers=headers).content.decode('utf-8')
             photo_data = json.loads(photo_list.split('(')[1].split(')')[0])
             photos = photo_data['data']['photoList']
-            for it_photo in photos:
-                if it_photo['raw']:
-                    urls.append(it_photo['raw'])
-                else:
-                    urls.append(it_photo['origin_url'])
-                with open('./' + name + '.txt', 'w+') as f:
-                    f.write(it_photo['raw'] or it_photo['origin_url'] + '\n')
-            # 开启线程下载(多线程有点问题,图片太多中途http请求好像会中断)
-            thread = threading.Thread(target=download, args=(name, urls))
-            thread.start()
-            # download(name, urls)
+            # with open('./' + name + '.txt', 'a+') as f:
+            #     for it_photo in photos:
+            #         if it_photo['raw']:
+            #             urls.append(it_photo['raw'])
+            #         else:
+            #             urls.append(it_photo['origin_url'])
+            #         f.write(it_photo['raw'] or it_photo['origin_url'] + '\n')
+            #     f.close()
+        # 开启线程下载(多线程有点问题,图片太多中途http请求好像会中断)
+        # thread = threading.Thread(target=download, args=(name, urls))
+        # thread.start()
+        # download(name, urls)
 
 
 # 下载 urls[ ] 图片链接,  name:文件夹名
@@ -84,7 +84,7 @@ def download(name, urls):
 
 if __name__ == '__main__':
     # cookie每次要自行获取
-    url = 'g_tk=970489861&callback=shine0_Callback&t=991992486&hostUin=497921268&uin=497921268&appid=4&inCharset=utf-8&outCharset=utf-8&source=qzone&plat=qzone&format=jsonp&notice=0&filter=1&handset=4&pageNumModeSort=40&pageNumModeClass=15&needUserInfo=1&idcNum=4&callbackFun=shine0&_=1533966302018'
-    cookie = 'pgv_pvi=3678962688; ptui_loginuin=497921268; pt2gguin=o0497921268; RK=1UC9yWdwZe; ptcz=6c1b11124de886738ef664d4893662b86b7c7217b6e67e0c7965f2244fb7e0d3; pgv_pvid=9073299548; QZ_FE_WEBP_SUPPORT=1; cpu_performance_v8=0; __Q_w_s__QZN_TodoMsgCnt=1; pgv_si=s8893934592; _qpsvr_localtk=0.37554995097100563; ptisp=ctc; uin=o0497921268; skey=@kBZpbDcaP; p_uin=o0497921268; pt4_token=0cmykMAzUDg-2V*4gG4USagiCyVpTRZGHrv-*mZhR2g_; p_skey=LwVBEIsT41hQhtPbqv8LwkzFKsIYqoXqEVyL1z*UJTg_; Loading=Yes; pgv_info=ssid=s2065686180'
+    url = 'g_tk=905918741&callback=shine0_Callback&t=456273362&hostUin=497921268&uin=497921268&appid=4&inCharset=utf-8&outCharset=utf-8&source=qzone&plat=qzone&format=jsonp&notice=0&filter=1&handset=4&pageNumModeSort=40&pageNumModeClass=15&needUserInfo=1&idcNum=4&callbackFun=shine0&_=1533979609979'
+    cookie = 'pgv_pvi=3678962688; ptui_loginuin=497921268; pt2gguin=o0497921268; RK=1UC9yWdwZe; ptcz=6c1b11124de886738ef664d4893662b86b7c7217b6e67e0c7965f2244fb7e0d3; pgv_pvid=9073299548; QZ_FE_WEBP_SUPPORT=1; __Q_w_s__QZN_TodoMsgCnt=1; Loading=Yes; cpu_performance_v8=5; pgv_si=s6618773504; _qpsvr_localtk=0.1975213599939032; ptisp=ctc; uin=o0497921268; skey=@kBZpbDcaP; p_uin=o0497921268; pt4_token=LunPqvi8tNzKXKm5wLFMxwsZw9romRUa*FfvEXrTNhQ_; p_skey=k72EKg1sEKaeyXGPDSTsQNvj7TFWkHOiwBa6Fg8aAno_; pgv_info=ssid=s4265401900'
     albums = parseAlbum(url, cookie)  # 所有的相册
     parsePhotos(albums, cookie)  # 所有的照片url&&按相册下载
